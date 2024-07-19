@@ -6,6 +6,6 @@ Switch Pro Controller -> XInput wrapper with ViGEmBus
 * USB Connected Pro Controller
 
 # Usage
-1. Download a release
+1. Download a release (https://github.com/littletsu/noobcontroller/releases)
 2. Connect Pro Controller through USB
 3. Run noobcontroller
