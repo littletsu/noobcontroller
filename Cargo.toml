@@ -1,0 +1,9 @@
+[package]
+name = "noobcontroller"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+hidapi = "2.6.1"
+iced = "0.12.1"
+vigem-client = "0.1.4"
