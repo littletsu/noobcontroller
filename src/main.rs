@@ -151,21 +151,28 @@ impl Controller for ProController {
         let mut buf_ = [0u8; REPORT_LEN];
         self.subcommand(0x10, &cmd, &mut buf_)?;
         let res = buf_[20..(20+usize::from(size))].to_owned();
+        // let mut addr = [0u8; 4];
+        // addr[0] = buf_[0];
+        // addr[1] = buf_[1];
+        // addr[2] = buf_[2];
+        // addr[3] = buf_[3];
+        // println!("read_spi from {:#06x} got {:#06x} size {size}", from, i32::from_le_bytes(addr));
         return Ok(res)
     }
 
     fn read_stick_calibration(&mut self, user_address: i32, factory_address: i32, deadzone_address: i32, side: bool) -> Result<u16, String> {
         let mut buf_ = self.read_spi(user_address, 9)?;
         let mut found = false;
+        let side_name = if side { "Left" } else { "Right" };
         for i in buf_.iter() {
-            if *i == 0xff {
+            if *i == 0xff || *i == 0x00 {
                 continue;
             }
-            // Using user calibration data
+            println!("Using user calibration data for {side_name}");
             found = true;
         }
         if !found {
-            // Using factory calibration data
+            println!("Using factory calibration data for {side_name}");
             buf_ = self.read_spi(factory_address, 9)?;
         }
         let stick_cal = if side { &mut self.lstick_cal } else { &mut self.rstick_cal };
@@ -256,7 +263,10 @@ fn main() {
         println!("Error while attaching: {e}");
         return;
     };
+    println!("Left Deadzone: {}, Left Calibration: {:?}", controller.ldeadzone, controller.lstick_cal);
+    println!("Right Deadzone: {}, Right Calibration: {:?}", controller.rdeadzone, controller.rstick_cal);
     println!("Successfully attached to Pro Controller!");
+    
     loop {
         let mut data = [0u8; REPORT_LEN];
         let _res = controller.read_hid(&mut data[..]).expect("Couldn't read hid!");
